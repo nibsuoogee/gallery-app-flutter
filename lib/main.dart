@@ -15,10 +15,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.red,
         fontFamily: 'Kanit',
       ),
-      home: const MyHomePage(title: 'GARBO'),
+      home: const MyHomePage(title: 'GARBO GALLERY'),
     );
   }
 }
@@ -34,12 +34,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  List<String> _searchArray = ['nature', 'beautiful', 'flowers', 'landscape', 'abstract', 'fire', 'dark', 'love', 'winter'];
+  String selectedWord = 'None';
+  List<String> _images = ['https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', 'https://images.pexels.com/photos/3693901/pexels-photo-3693901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', 'https://images.pexels.com/photos/3680210/pexels-photo-3680210.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'];
 
   Future<Container> makeApiRequest() async {
     Uri myuri = Uri.parse('https://api.pexels.com/v1/search?query=nature&per_page=1');
@@ -70,29 +67,90 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
 
-      body:Container(
+      body: Container(
         color: Colors.black,
-        child: FutureBuilder(
-        future: makeApiRequest(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final data = snapshot.data;
-            //final imageUrl = data.containsKey(2) ? data[2] : 'Key not found';
-            final imageUrl = 'https://images.pexels.com/photos/15286/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940';
-
-            return Container(
-              child: Image.network(imageUrl),
-            );
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-
-          return CircularProgressIndicator();
-        },
+        child: Flex(
+        //padding: const EdgeInsets.all(15),
+        direction: Axis.vertical,
+        children: [
+         Expanded(
+          child: SizedBox(           
+            child: ListView.builder(
+            itemCount: _images.length + 1,
+            itemBuilder: (context, int index){
+            if (index == 0) {
+              return Padding(
+              padding: const EdgeInsets.all(15),
+                child: SearchSelectMatrix(
+                  words: _searchArray,
+                  onWordSelected: (word) {
+                    setState(() {
+                      selectedWord = word;
+                    });
+                  },
+                ),
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image.network(_images[index-1]),
+                ),
+              );
+            }
+     
+          },)
+          ))
+        ]
       ),
-      ),
-
+      )
     );
   }
 }
 
+class SearchSelectMatrix extends StatefulWidget {
+  final List<String> words;
+  final Function(String) onWordSelected;
+
+  SearchSelectMatrix({required this.words, required this.onWordSelected});
+
+  @override
+  State<SearchSelectMatrix> createState() => _SearchSelectMatrix();
+}
+
+class _SearchSelectMatrix extends State<SearchSelectMatrix> {
+  String selectedWord = '';
+
+  @override
+  Widget build(BuildContext context) {
+      return Container(
+        child: Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: widget.words.map((word) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedWord = word;
+                });
+                widget.onWordSelected(word);
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: word == selectedWord ? Colors.blue : Colors.grey,
+                    width: 2,
+                  ),
+                ),
+                child: Text(
+                  word, style: const TextStyle(color: Colors.white),
+                  ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+}
