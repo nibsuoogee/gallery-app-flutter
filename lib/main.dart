@@ -36,10 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   List<String> _searchArray = ['nature', 'beautiful', 'flowers', 'landscape', 'abstract', 'fire', 'dark', 'love', 'winter'];
   String selectedWord = 'None';
-  List<String> _images = ['https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', 'https://images.pexels.com/photos/3693901/pexels-photo-3693901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', 'https://images.pexels.com/photos/3680210/pexels-photo-3680210.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'];
+  List<String> _images = [];
 
-  Future<Container> makeApiRequest() async {
-    Uri myuri = Uri.parse('https://api.pexels.com/v1/search?query=nature&per_page=1');
+  void makeApiRequest(String searchWord) async {
+    Uri myuri = Uri.parse('https://api.pexels.com/v1/search?query=$searchWord');
     final response = await http.get(
       myuri,
       headers: {
@@ -50,9 +50,16 @@ class _MyHomePageState extends State<MyHomePage> {
       final data = jsonDecode(response.body) as Map;
       final imageUrl = 'what';
 
-      return Container(
-        child: Image.network(imageUrl),
-        );
+      List<String> responseImages = [];
+
+      for (Map<String, dynamic> element in data['photos']) {
+        responseImages.add(element['src']['portrait']);
+      }
+
+      setState(() {
+        _images = responseImages;
+      });
+      return;
 
     } else {
       throw Exception('Failed to load data');
@@ -70,7 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         color: Colors.black,
         child: Flex(
-        //padding: const EdgeInsets.all(15),
         direction: Axis.vertical,
         children: [
          Expanded(
@@ -80,26 +86,28 @@ class _MyHomePageState extends State<MyHomePage> {
             itemBuilder: (context, int index){
             if (index == 0) {
               return Padding(
-              padding: const EdgeInsets.all(15),
-                child: SearchSelectMatrix(
-                  words: _searchArray,
-                  onWordSelected: (word) {
-                    setState(() {
-                      selectedWord = word;
-                    });
-                  },
-                ),
-              );
+                padding: const EdgeInsets.all(15),
+                  child: SearchSelectMatrix(
+                    words: _searchArray,
+                    onWordSelected: (word) {
+                      makeApiRequest(word);
+                      setState(() {
+                        selectedWord = word;
+                      });
+                    },
+                  ),
+                );
             } else {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
-                  child: Image.network(_images[index-1]),
+                  child: Image.network(
+                    _images[index-1],
+                  ),
                 ),
               );
             }
-     
           },)
           ))
         ]
