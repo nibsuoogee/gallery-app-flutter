@@ -1,4 +1,4 @@
-# gallery-app-flutter
+# garbo gallery
 
 Images from the Pexels free stock photo api: https://www.pexels.com/
 
