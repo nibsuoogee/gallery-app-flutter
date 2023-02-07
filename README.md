@@ -1,5 +1,7 @@
 # garbo gallery
 
+![image](https://user-images.githubusercontent.com/37696410/217313757-68302a45-2573-4019-97fb-826e5294ca9a.png)
+
 Images from the Pexels free stock photo api: https://www.pexels.com/
 
 # Search view
