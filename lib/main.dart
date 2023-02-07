@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -35,10 +33,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> _searchArray = ['nature', 'beautiful', 'flowers', 'landscape', 'abstract', 'fire', 'dark', 'love', 'winter'];
+  List<String> _searchArrayDisplay = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', '+ more'];
+  final List<String> _searchArray = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', '+ more'];
+  final List<String> _searchArrayExtension = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', 'business', 'technology', 'space', 'city', 'dog', 'cat', 'beach', 'mountain', 'gamer', 'car', 'sports', 'science', 'landscape','- less'];
   String selectedWord = 'None';
   List<String> _images = [];
   final ScrollController _scrollController = ScrollController();
+  late FocusNode myFocusNode;
+  TextEditingController myController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    myFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    myFocusNode.dispose();
+
+    super.dispose();
+  }
 
   void scrollToTop() {
     _scrollController.jumpTo(0.0);
@@ -102,18 +118,49 @@ class _MyHomePageState extends State<MyHomePage> {
           child: SizedBox(
             child: ListView.builder(
             controller: _scrollController,
-            itemCount: _images.length + 1,
+            itemCount: (_images.isNotEmpty ? _images.length : 1) + 1,
             itemBuilder: (context, int index){
-            if (index == 0) {
+              if (index == 0) {
+              return Padding(
+                padding: const EdgeInsets.all(15),
+                child: TextFormField(
+                  
+                  controller: myController,
+                  onEditingComplete: () {
+                    setState(() {
+                      _images = [];
+                      selectedWord = myController.text;
+                    });
+                    makeApiRequest(myController.text);
+                  },
+                  focusNode: myFocusNode,
+                  cursorColor: Color.fromARGB(255, 255, 255, 255),
+                  style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color.fromARGB(255, 106, 106, 106), width: 1),
+                    ),
+                  ),
+                ),
+              );
+            } else if (index == 1) {
               return Padding(
                 padding: const EdgeInsets.all(15),
                   child: SearchSelectMatrix(
-                    words: _searchArray,
+                    words: _searchArrayDisplay,
                     onWordSelected: (word) {
-                      makeApiRequest(word);
+                      myFocusNode.unfocus();
                       setState(() {
-                        _images = [];
-                        selectedWord = word;
+                        if (word == '+ more') {
+                          _searchArrayDisplay = _searchArrayExtension;
+                        } else if (word == '- less') {
+                          _searchArrayDisplay = _searchArray;
+                        } else {
+                          _images = [];
+                          selectedWord = word;
+                          makeApiRequest(word);
+                        }
                       });
                     },
                   ),
@@ -122,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return Column(children: [
                 Text(
                       textAlign: TextAlign.center,
-                      '${_images.length} loaded (page ${calculatePageNumber(_images.length)})', style: TextStyle(color: Color.fromARGB(255, 99, 99, 99)),
+                      '${_images.length} loaded (page ${calculatePageNumber(_images.length)-1})', style: TextStyle(color: Color.fromARGB(255, 99, 99, 99)),
                     ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
