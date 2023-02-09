@@ -6,6 +6,4 @@ Images from the Pexels free stock photo api: https://www.pexels.com/
 
 # Search view
 
-<img src="https://user-images.githubusercontent.com/37696410/217338143-bf906e9e-082b-445e-a492-518d1542380f.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217338365-349939c0-8280-4a4f-b68e-d29cd19776b4.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217338537-21e5a193-4d32-4cb1-8059-cf65a6d205b5.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217338846-08bd4f46-8ce6-484d-b67f-5391963eb138.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217339116-49128d66-aeb7-4522-970d-6d5218b08f99.png" width="220">
-
-
+<img src="https://user-images.githubusercontent.com/37696410/217894153-c08d8b7f-dca3-4349-a506-616c2d9a8842.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217894224-3c773644-9094-4922-b3cb-34d795af081e.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217894459-9364220c-bc56-4287-b10a-9b738a5ebc80.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217894857-8dc2203a-b71f-4f92-b58f-26140270d283.png" width="220"> <img src="https://user-images.githubusercontent.com/37696410/217895161-0ab3a943-b0b0-40df-8228-2d48f264dcf4.png" width="220">
