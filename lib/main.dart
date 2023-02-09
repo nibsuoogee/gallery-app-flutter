@@ -33,9 +33,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> _searchArrayDisplay = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', '+ more'];
-  final List<String> _searchArray = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', '+ more'];
-  final List<String> _searchArrayExtension = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', 'business', 'technology', 'space', 'city', 'dog', 'cat', 'beach', 'mountain', 'gamer', 'car', 'sports', 'science', 'landscape','- less'];
+  int _nOexampleTerms = 4;
+  final List<String> _searchArrayDisplay = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', 'business', 'technology', 'space', 'city', 'dog', 'cat', 'beach', 'mountain', 'gamer', 'car', 'sports', 'science', 'landscape'];
   String selectedWord = 'None';
   List<Map> _images = [];
   final ScrollController _scrollController = ScrollController();
@@ -143,26 +142,42 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             } else if (index == 1) {
-              return Padding(
+              return Column(children: [Padding(
                 padding: const EdgeInsets.all(15),
                   child: SearchSelectMatrix(
-                    words: _searchArrayDisplay,
+                    words: _searchArrayDisplay.sublist(0,_nOexampleTerms),
                     onWordSelected: (word) {
                       myFocusNode.unfocus();
                       setState(() {
-                        if (word == '+ more') {
-                          _searchArrayDisplay = _searchArrayExtension;
-                        } else if (word == '- less') {
-                          _searchArrayDisplay = _searchArray;
-                        } else {
-                          _images = [];
-                          selectedWord = word;
-                          makeApiRequest(word);
-                        }
+                        _images = [];
+                        selectedWord = word;
+                        makeApiRequest(word);
                       });
                     },
                   ),
-                );
+                ),
+                Center(child: (_nOexampleTerms < 10) ? IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  tooltip: 'more search terms',
+                  onPressed: () {
+                    setState(() {
+                      _nOexampleTerms = _searchArrayDisplay.length - 1;
+                    });
+                  },
+                ) : IconButton(
+                  icon: const Icon(Icons.remove_circle_outline),
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  tooltip: 'less search terms',
+                  onPressed: () {
+                    setState(() {
+                      _nOexampleTerms = 9;
+                    });
+                  },
+                ),
+                ),
+                ]
+              );
             } else if (index == (_images.length)) {
               return Column(children: [
                 Text(
