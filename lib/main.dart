@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.red,
-        fontFamily: 'Kanit',
+        fontFamily: 'Poppins',
       ),
       home: const MyHomePage(title: 'GARBO GALLERY'),
     );
@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<String> _searchArray = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', '+ more'];
   final List<String> _searchArrayExtension = ['curated', 'nature', 'beautiful', 'flowers', 'abstract', 'fire', 'dark', 'love', 'winter', 'business', 'technology', 'space', 'city', 'dog', 'cat', 'beach', 'mountain', 'gamer', 'car', 'sports', 'science', 'landscape','- less'];
   String selectedWord = 'None';
-  List<String> _images = [];
+  List<Map> _images = [];
   final ScrollController _scrollController = ScrollController();
   late FocusNode myFocusNode;
   TextEditingController myController = TextEditingController();
@@ -79,10 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map;
 
-      List<String> responseImages = [];
+      List<Map> responseImages = [];
 
       for (Map<String, dynamic> element in data['photos']) {
-        responseImages.add(element['src']['portrait']);
+        var elementMap = <String, dynamic>{};
+        elementMap ['image'] =  element['src']['portrait'];
+        elementMap ['photographer'] =  element['photographer'];
+        elementMap ['id'] =  element['id'];
+        responseImages.add(elementMap);
       }
 
       setState(() {
@@ -93,12 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       throw Exception('Failed to load data');
     }
-  }
-
-  void addCollie() {
-    setState(() {
-      _images.add("https://www.vastavalo.net/albums/userpics/13414/normal_4564_collie.jpg");
-    });
   }
 
   @override
@@ -122,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
             itemBuilder: (context, int index){
               if (index == 0) {
               return Padding(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   
                   controller: myController,
@@ -134,8 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     makeApiRequest(myController.text);
                   },
                   focusNode: myFocusNode,
-                  cursorColor: Color.fromARGB(255, 255, 255, 255),
-                  style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                  cursorColor: const Color.fromARGB(255, 255, 255, 255),
+                  style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
@@ -178,10 +176,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     makeApiRequest(selectedWord);
                   },
                   child: Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                     border: Border.all(
-                      color: Color.fromARGB(255, 224, 224, 224),
+                      color: const Color.fromARGB(255, 224, 224, 224),
                       width: 2,
                     ),
                     ),
@@ -199,10 +197,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     scrollToTop();
                   },
                   child: Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                     border: Border.all(
-                      color: Color.fromARGB(255, 130, 130, 130),
+                      color: const Color.fromARGB(255, 130, 130, 130),
                       width: 2,
                     ),
                     ),
@@ -216,15 +214,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ]);
               
             } else {
-              return Padding(
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
                   child: FadeInImage.assetNetwork(
                       placeholder: 'graphics/dark_placeholder_image.jpg',
-                      image: _images[index-1],
+                      image: _images[index-1]['image'],
                     ),
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                      'Photographer: ${_images[index-1]['photographer']}\nID: ${_images[index-1]['id']}', style: TextStyle(color: Color.fromARGB(255, 149, 149, 149)),
+                  ),
+                ),
+                const Padding(
+                padding: EdgeInsets.all(15.0)
+
+                ),
+              ],
+              
               );
             }
           },)
